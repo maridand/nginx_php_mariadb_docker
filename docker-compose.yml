@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:1.25.4
+    ports:
+      - "8080:80"
+    volumes:
+      - ./configs/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html:ro # Bind mount the application code read-only for Nginx
+
+  php:
+    build: ./docker_images/php
+    expose:
+      - "9000"
+    volumes:
+      - ./configs/php:/usr/local/etc/php
+      - ./src:/var/www/html # PHP container has read-write access to the application code
+
+  mariadb:
+    image: mariadb:10.4 # Corrected from 'images' to 'image'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456" # Ensure this is a secure password in real applications
